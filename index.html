@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DGM Analytics — Demo Dashboards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #FAFAFA;
+      --red: #E63946;
+      --mid: #999999;
+      --white: #FFFFFF;
+      --border: #E2E2DE;
+      --surface: #F4F4F0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--ink);
+      padding: 22px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-left { display: flex; flex-direction: column; gap: 4px; }
+    .brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+    .brand span { color: var(--red); }
+    .tagline { font-size: 12px; color: var(--mid); letter-spacing: 0.06em; }
+    .header-contact { text-align: right; }
+    .contact-label { font-size: 10px; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; }
+    .contact-email { font-size: 13px; color: #CCCCCC; }
+    .contact-email a { color: #CCCCCC; text-decoration: none; }
+    .contact-email a:hover { color: var(--red); }
+
+    /* HERO STRIP */
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 48px;
+    }
+    .hero-inner { max-width: 760px; }
+    .hero-eyebrow {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+    .hero-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero-body {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.7;
+      max-width: 600px;
+    }
+
+    /* MAIN */
+    .main { padding: 40px 48px; flex: 1; }
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--mid);
+      margin-bottom: 20px;
+    }
+
+    /* DEMO GRID */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .demo-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .demo-card:hover { border-color: #AAAAAA; }
+    .demo-card.live:hover { border-color: var(--ink); }
+    .demo-card-top {
+      padding: 20px 22px 16px;
+      flex: 1;
+    }
+    .demo-card-footer {
+      padding: 12px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 12px;
+    }
+    .tag-live { background: #111111; color: #FAFAFA; }
+    .tag-coming { background: var(--surface); color: var(--mid); border: 1px solid var(--border); }
+    .card-vertical {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .card-metrics {
+      font-size: 11px;
+      color: var(--mid);
+    }
+    .card-arrow {
+      font-size: 16px;
+      color: var(--mid);
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .demo-card.live:hover .card-arrow { color: var(--red); transform: translateX(3px); }
+
+    /* ABOUT STRIP */
+    .about-strip {
+      background: var(--ink);
+      border-radius: 8px;
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+    .about-item { border-left: 2px solid #252525; padding-left: 16px; }
+    .about-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+    .about-text { font-size: 12px; color: #BBBBBB; line-height: 1.6; }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      color: var(--ink);
+    }
+    .footer-brand span { color: var(--red); }
+    .footer-note { font-size: 11px; color: var(--mid); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .header { padding: 18px 24px; }
+      .hero { padding: 24px 24px; }
+      .main { padding: 28px 24px; }
+      .footer { padding: 14px 24px; }
+      .demo-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-strip { grid-template-columns: 1fr; gap: 16px; }
+    }
+    @media (max-width: 540px) {
+      .header { padding: 14px 16px; }
+      .header-contact { display: none; }
+      .hero { padding: 20px 16px; }
+      .hero-heading { font-size: 24px; }
+      .main { padding: 20px 16px; }
+      .footer { padding: 12px 16px; }
+      .footer-note { display: none; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .about-strip { grid-template-columns: 1fr; padding: 20px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand"><span>DGM</span> ANALYTICS</div>
+    <div class="tagline">Analytics that tells you what to do next — not just what happened</div>
+  </div>
+  <div class="header-contact">
+    <div class="contact-label">Get in touch</div>
+    <div class="contact-email"><a href="mailto:dexter@dgmanalytics.com">dexter@dgmanalytics.com</a></div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">SAMPLE DASHBOARDS</div>
+    <div class="hero-heading">What your data could look like, starting now.</div>
+    <div class="hero-body">Each dashboard below is built around a real business type and real metrics — with sample data to show exactly what DGM Analytics delivers. Click any live demo to explore.</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="section-label">AVAILABLE DEMOS</div>
+  <div class="demo-grid">
+
+    <!-- DOSIE — LIVE -->
+    <a class="demo-card live" href="./startup/">
+      <div class="demo-card-top">
+        <div class="card-tag tag-live">Live Demo</div>
+        <div class="card-vertical">Health Tech &nbsp;·&nbsp; Pre-Launch App</div>
+        <div class="card-title">Pre-Launch App — Launch Analytics Plan</div>
+        <div class="card-desc">Email waitlist pipeline, projected user growth, core feature engagement trend, cohort retention, and feature adoption — built for a pre-launch app's launch quarter.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">6 charts &nbsp;·&nbsp; 7 KPIs &nbsp;·&nbsp; 4 insights</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- RESTAURANT — COMING SOON -->
+    <div class="demo-card">
+      <div class="demo-card-top">
+        <div class="card-tag tag-coming">Coming Soon</div>
+        <div class="card-vertical">Restaurant &nbsp;·&nbsp; Square POS</div>
+        <div class="card-title">Restaurant — Revenue & Labor</div>
+        <div class="card-desc">Busiest hour heatmap, top dishes by margin, labor cost vs. revenue overlay, and slow day identification — built for independent full-service restaurants.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">Hourly heatmap &nbsp;·&nbsp; Labor trends</div>
+        <div class="card-arrow" style="color:var(--border);">→</div>
+      </div>
+    </div>
+
+    <!-- SALON — COMING SOON -->
+    <div class="demo-card">
+      <div class="demo-card-top">
+        <div class="card-tag tag-coming">Coming Soon</div>
+        <div class="card-vertical">Salon &amp; Barbershop &nbsp;·&nbsp; Square</div>
+        <div class="card-title">Salon — Chair &amp; Provider Analytics</div>
+        <div class="card-desc">Stylist utilization rate, rebooking percentage, average ticket by provider, and peak chair hours — built for owner-operated salons and barbershops.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">Provider breakdown &nbsp;·&nbsp; Rebooking rate</div>
+        <div class="card-arrow" style="color:var(--border);">→</div>
+      </div>
+    </div>
+
+    <a class="demo-card live" href="./retail/">
+      <div class="demo-card-top">
+        <div class="card-tag tag-live">Live Demo</div>
+        <div class="card-vertical">Retail &nbsp;·&nbsp; Shopify / Square</div>
+        <div class="card-title">Retail — Inventory &amp; Revenue</div>
+        <div class="card-desc">Top SKUs by revenue, dead inventory identification, return rate by category, returns vs. net revenue, return customer rate, and day-of-week performance — built for independent boutique and specialty retail shops.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">6 charts &nbsp;·&nbsp; 7 KPIs &nbsp;·&nbsp; 4 insights</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- TATTOO — COMING SOON -->
+    <div class="demo-card">
+      <div class="demo-card-top">
+        <div class="card-tag tag-coming">Coming Soon</div>
+        <div class="card-vertical">Tattoo Studio &nbsp;·&nbsp; Square</div>
+        <div class="card-title">Tattoo Studio — Artist Analytics</div>
+        <div class="card-desc">Artist booking density, average ticket by style category, repeat client rate, and chair utilization — built for independent tattoo studios and artists.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">Artist-level breakdown &nbsp;·&nbsp; Booking density</div>
+        <div class="card-arrow" style="color:var(--border);">→</div>
+      </div>
+    </div>
+
+    <!-- HVAC — COMING SOON -->
+    <div class="demo-card">
+      <div class="demo-card-top">
+        <div class="card-tag tag-coming">Coming Soon</div>
+        <div class="card-vertical">HVAC &amp; Services &nbsp;·&nbsp; Field Ops</div>
+        <div class="card-title">HVAC — Job &amp; Technician Metrics</div>
+        <div class="card-desc">Job profitability, technician efficiency, seasonal demand forecasting, and revenue per call type — built for owner-operated HVAC and field service companies.</div>
+      </div>
+      <div class="demo-card-footer">
+        <div class="card-metrics">Job-level P&amp;L &nbsp;·&nbsp; Seasonal forecast</div>
+        <div class="card-arrow" style="color:var(--border);">→</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ABOUT STRIP -->
+  <div class="about-strip">
+    <div class="about-item">
+      <div class="about-label">WHAT DGM ANALYTICS DOES</div>
+      <div class="about-text">Connects to your existing POS, payment, or app data and turns it into a clean monthly dashboard with written insights and specific recommendations — not just charts.</div>
+    </div>
+    <div class="about-item">
+      <div class="about-label">WHO IT'S FOR</div>
+      <div class="about-text">Independent business owners, early-stage founders, and operators who are making decisions by gut feel today and want data to back them up — without hiring a full analytics team.</div>
+    </div>
+    <div class="about-item">
+      <div class="about-label">HOW TO GET STARTED</div>
+      <div class="about-text">Reach out for a free audit. DGM Analytics reviews your current data setup, identifies the three most valuable metrics for your business, and shows you what a dashboard would look like before any commitment.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-brand"><span>DGM</span> ANALYTICS &nbsp;·&nbsp; dexter@dgmanalytics.com</div>
+  <div class="footer-note">Birmingham, AL &nbsp;·&nbsp; All dashboards use sample data for demonstration purposes</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Launch App — Analytics Dashboard | DGM Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #FAFAFA;
+      --red: #E63946;
+      --mid: #999999;
+      --white: #FFFFFF;
+      --border: #E2E2DE;
+      --surface: #F4F4F0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--ink);
+      padding: 18px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .brand-mark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      white-space: nowrap;
+    }
+    .divider-v { width: 1px; height: 24px; background: #2A2A2A; flex-shrink: 0; }
+    .client-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      color: var(--white);
+    }
+    .header-right { text-align: right; }
+    .report-period { font-size: 10px; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; }
+    .report-date { font-size: 12px; color: #CCCCCC; margin-top: 2px; }
+
+    /* MAIN */
+    .main { padding: 24px 36px 20px; }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--mid);
+      margin-bottom: 12px;
+    }
+
+    /* SAMPLE BANNER */
+    .sample-banner {
+      background: #FFF8E7;
+      border: 1px solid #F0D080;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .sample-dot { width: 6px; height: 6px; border-radius: 50%; background: #C8960A; flex-shrink: 0; margin-top: 3px; }
+    .sample-text { font-size: 11px; color: #7A5C00; font-weight: 500; letter-spacing: 0.03em; }
+
+    /* KPI GRIDS */
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 18px 14px;
+      min-width: 0;
+    }
+    .kpi-card.accent { border-top: 3px solid var(--red); }
+    .kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; font-weight: 500; }
+    .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.01em; color: var(--ink); line-height: 1; }
+    .kpi-delta { margin-top: 6px; font-size: 11px; color: #2A9D6B; font-weight: 500; }
+    .kpi-sub { margin-top: 3px; font-size: 11px; color: var(--mid); }
+
+    /* CHART ROWS */
+    .charts-row-wide { display: grid; grid-template-columns: 2fr 1.3fr; gap: 14px; margin-bottom: 14px; }
+    .charts-row-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 18px 14px;
+      min-width: 0;
+    }
+    .chart-title { font-weight: 500; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+    .chart-subtitle { font-size: 11px; color: var(--mid); margin-bottom: 14px; line-height: 1.5; }
+
+    /* LEGEND */
+    .chart-legend { margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #777; }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+    /* TIMELINE */
+    .timeline-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+    }
+    .timeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+    .timeline-line { position: absolute; top: 9px; left: 12.5%; right: 12.5%; height: 1px; background: var(--border); }
+    .timeline-item { text-align: center; padding: 0 6px; }
+    .timeline-dot-wrap {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--surface);
+      margin: 0 auto 10px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .timeline-dot-wrap.active { background: var(--ink); border-color: var(--ink); }
+    .timeline-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mid); }
+    .timeline-dot.active { background: var(--red); }
+    .timeline-date { font-size: 10px; color: var(--mid); letter-spacing: 0.06em; margin-bottom: 4px; }
+    .timeline-date.active { color: var(--red); font-weight: 500; }
+    .timeline-label { font-size: 12px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+
+    /* INSIGHTS */
+    .insight-card { background: var(--ink); border-radius: 6px; padding: 20px 22px; margin-bottom: 24px; }
+    .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .insight-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .insight-title { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; color: var(--red); }
+    .insight-items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .insight-item { border-left: 2px solid #252525; padding-left: 12px; }
+    .insight-finding { font-size: 12px; color: #AAAAAA; margin-bottom: 8px; line-height: 1.6; }
+    .insight-action { font-size: 12px; color: var(--white); font-weight: 500; line-height: 1.6; }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.14em; color: var(--ink); }
+    .footer-brand span { color: var(--red); }
+    .footer-note { font-size: 11px; color: var(--mid); }
+
+    /* TABLET (<=900px) */
+    @media (max-width: 900px) {
+      .header { padding: 16px 20px; }
+      .main { padding: 20px 20px 16px; }
+      .footer { padding: 12px 20px; }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: repeat(2, 1fr); }
+      .timeline-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .timeline-line { display: none; }
+    }
+
+    /* MOBILE (<=540px) */
+    @media (max-width: 540px) {
+      .header { padding: 14px 16px; }
+      .client-name { font-size: 15px; }
+      .divider-v { display: none; }
+      .header-right { display: none; }
+      .main { padding: 16px 16px 12px; }
+      .footer { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 4px; }
+      .footer-note { display: none; }
+      .kpi-grid-3 { grid-template-columns: 1fr 1fr; }
+      .kpi-grid-4 { grid-template-columns: 1fr 1fr; }
+      .kpi-value { font-size: 28px; }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: 1fr; }
+      .timeline-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .timeline-line { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand-mark">DGM ANALYTICS</div>
+    <div class="divider-v"></div>
+    <div class="client-name">PRE-LAUNCH APP — LAUNCH ANALYTICS PLAN</div>
+  </div>
+  <div class="header-right">
+    <div class="report-period">Dashboard Preview</div>
+    <div class="report-date">Built for Launch Day Forward</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="sample-banner">
+    <div class="sample-dot"></div>
+    <div class="sample-text">SAMPLE DATA — This dashboard illustrates the metrics DGM Analytics will track from your launch day forward. All figures are projected for demonstration.</div>
+  </div>
+
+  <!-- PRE-LAUNCH -->
+  <div class="section-label">PRE-LAUNCH — CURRENT PIPELINE</div>
+  <div class="kpi-grid-3">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Email Signups</div>
+      <div class="kpi-value">347</div>
+      <div class="kpi-delta">↑ 40% growth last 60 days</div>
+      <div class="kpi-sub">Waitlist collected to date</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Monthly Signups</div>
+      <div class="kpi-value">43</div>
+      <div class="kpi-delta">↑ Trending up since Jan</div>
+      <div class="kpi-sub">Over last 8 months</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Projected Day-1 Users</div>
+      <div class="kpi-value">~208</div>
+      <div class="kpi-delta">At 60% signup-to-download</div>
+      <div class="kpi-sub">Based on industry benchmarks</div>
+    </div>
+  </div>
+
+  <div class="charts-row-wide" style="margin-bottom:24px;">
+    <div class="chart-card">
+      <div class="chart-title">Email Signup Growth</div>
+      <div class="chart-subtitle">Monthly waitlist signups since website launch — Sep 2025 to Apr 2026</div>
+      <div style="position:relative;width:100%;height:200px;">
+        <canvas id="signupChart" role="img" aria-label="Bar chart of monthly email signups Sep 2025–Apr 2026, peaking at 67 in February">Sep 28, Oct 41, Nov 35, Dec 29, Jan 52, Feb 67, Mar 48, Apr 47.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Projected Launch Funnel</div>
+      <div class="chart-subtitle">Estimated conversion from waitlist signup to active user at launch</div>
+      <div style="position:relative;width:100%;height:160px;">
+        <canvas id="funnelChart" role="img" aria-label="Horizontal bar funnel: 347 signups to 208 estimated downloads to 156 projected active users">Signups 347, Downloads est. 208, Active users proj. 156.</canvas>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#111111;"></span>Email Signups</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#555555;"></span>Est. Downloads (60%)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#E63946;"></span>Proj. Active (45%)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST-LAUNCH -->
+  <div class="section-label">POST-LAUNCH PROJECTIONS — MONTH 3</div>
+  <div class="kpi-grid-4">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Total Users</div>
+      <div class="kpi-value">247</div>
+      <div class="kpi-delta">↑ 140% vs prior month</div>
+      <div class="kpi-sub">Tracked from launch day</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Monthly Active Users</div>
+      <div class="kpi-value">189</div>
+      <div class="kpi-delta">↑ 77% activation rate</div>
+      <div class="kpi-sub">Active in last 30 days</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Core Feature Rate</div>
+      <div class="kpi-value">78%</div>
+      <div class="kpi-delta">↑ 7pts since launch</div>
+      <div class="kpi-sub">Primary outcome metric</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Differentiator Adoption</div>
+      <div class="kpi-value">43%</div>
+      <div class="kpi-delta">↑ of users engaged</div>
+      <div class="kpi-sub">Core differentiator metric</div>
+    </div>
+  </div>
+
+  <div class="charts-row-wide">
+    <div class="chart-card">
+      <div class="chart-title">User Growth</div>
+      <div class="chart-subtitle">Projected cumulative registered users — months 1 through 4 post-launch</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="growthChart" role="img" aria-label="Area line chart showing projected user growth from 18 in month 1 to 247 by month 4">Month 1: 18, Month 2: 47, Month 3: 103, Month 4: 247.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cohort Retention</div>
+      <div class="chart-subtitle">% of users retained at 30, 60 & 90 days after signup</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="retentionChart" role="img" aria-label="Grouped bar chart showing projected retention at 30, 60, 90 days for first two cohorts">Cohort 1: 83% at 30d, 67% at 60d, 61% at 90d. Cohort 2: 79% at 30d, 64% at 60d.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-equal">
+    <div class="chart-card">
+      <div class="chart-title">Core Feature Engagement Trend</div>
+      <div class="chart-subtitle">Projected improvement in primary outcome metric as users engage over time</div>
+      <div style="position:relative;width:100%;height:190px;">
+        <canvas id="adherenceChart" role="img" aria-label="Line chart of projected core feature engagement rate improving from 71% in month 1 to 78% by month 4">Month 1: 71%, Month 2: 74%, Month 3: 76%, Month 4: 78%.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Feature Adoption</div>
+      <div class="chart-subtitle">% of active users projected to engage each core feature</div>
+      <div style="position:relative;width:100%;height:190px;">
+        <canvas id="adoptionChart" role="img" aria-label="Horizontal bar chart of projected feature adoption: core feature 94%, secondary feature 67%, differentiator 43%, notifications 38%">Core 94%, secondary 67%, differentiator 43%, notifications 38%.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section-label">STARTUP MILESTONES</div>
+  <div class="timeline-card">
+    <div class="timeline-grid">
+      <div class="timeline-line"></div>
+      <div class="timeline-item">
+        <div class="timeline-dot-wrap"><div class="timeline-dot"></div></div>
+        <div class="timeline-date">MONTH 1</div>
+        <div class="timeline-label">Concept &amp;<br>Validation</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot-wrap"><div class="timeline-dot"></div></div>
+        <div class="timeline-date">MONTH 3</div>
+        <div class="timeline-label">MVP Build &amp;<br>Beta Testing</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot-wrap"><div class="timeline-dot"></div></div>
+        <div class="timeline-date">MONTH 6</div>
+        <div class="timeline-label">Waitlist &amp;<br>Pre-Launch Growth</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot-wrap active"><div class="timeline-dot active"></div></div>
+        <div class="timeline-date active">NEXT</div>
+        <div class="timeline-label">App Launch +<br>Analytics Foundation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section-label">PRESCRIPTIVE INSIGHTS — PROJECTED LAUNCH QUARTER</div>
+  <div class="insight-card">
+    <div class="insight-header">
+      <div class="insight-dot"></div>
+      <div class="insight-title">DGM ANALYTICS — WHAT WE'LL TRACK & WHY IT MATTERS</div>
+    </div>
+    <div class="insight-items">
+      <div class="insight-item">
+        <div class="insight-finding">Your email list is a pre-built audience — but only if you know how many actually convert to active users at launch.</div>
+        <div class="insight-action">→ Tracking signup-to-activation tells you whether your waitlist marketing attracted the right people, not just any people.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Cohort retention tells you where users fall off — day 30, 60, or 90. Most apps discover this problem 6 months too late.</div>
+        <div class="insight-action">→ Setting this up at launch means you catch the drop-off window early and fix it before it becomes a churn story.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Your differentiator feature is what separates you from every other app in your category. If users aren't finding it, you're underdelivering.</div>
+        <div class="insight-action">→ Tracking adoption from day one tells you whether onboarding is surfacing this feature — and when to push harder on it.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Core feature engagement is your proof point — for grant renewals, accelerator applications, and eventual investors.</div>
+        <div class="insight-action">→ Every month of clean engagement data before your next funding conversation is leverage. Start the clock at launch.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-brand"><span>DGM</span> ANALYTICS &nbsp;·&nbsp; dexter@dgmanalytics.com</div>
+  <div class="footer-note">Pre-launch sample dashboard — projected data for illustration &nbsp;·&nbsp; DGM Analytics 2026</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const INK='#111111', RED='#E63946', BORDER='#E8E8E4', MID='#777777';
+
+  const xScale = (o={}) => Object.assign({ grid:{display:false}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const yScale = (o={}) => Object.assign({ grid:{color:BORDER,lineWidth:0.5}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const base = (o={}) => Object.assign({ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }, o);
+
+  new Chart(document.getElementById('signupChart'),{
+    type:'bar',
+    data:{ labels:['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr'],
+      datasets:[{ data:[28,41,35,29,52,67,48,47], borderRadius:3,
+        backgroundColor:[BORDER,BORDER,BORDER,BORDER,'#888',INK,'#888','#888'] }] },
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.parsed.y+' signups'}}},
+      scales:{ x:xScale(), y:yScale({beginAtZero:true}) } })
+  });
+
+  new Chart(document.getElementById('funnelChart'),{
+    type:'bar',
+    data:{ labels:['Email Signups','Est. Downloads','Proj. Active'],
+      datasets:[{ data:[347,208,156], borderRadius:3, backgroundColor:[INK,'#555',RED] }] },
+    options:base({ indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.parsed.x+' people'}}},
+      scales:{ x:xScale({grid:{color:BORDER,lineWidth:0.5},min:0,max:400}), y:yScale({grid:{display:false}}) } })
+  });
+
+  new Chart(document.getElementById('growthChart'),{
+    type:'line',
+    data:{ labels:['Month 1','Month 2','Month 3','Month 4'],
+      datasets:[{ data:[18,47,103,247], borderColor:RED, backgroundColor:'rgba(230,57,70,0.07)',
+        fill:true, tension:0.4, pointBackgroundColor:RED, pointRadius:5, pointHoverRadius:7, borderWidth:2 }] },
+    options:base({ scales:{ x:xScale({grid:{color:BORDER,lineWidth:0.5}}), y:yScale({beginAtZero:true}) } })
+  });
+
+  new Chart(document.getElementById('retentionChart'),{
+    type:'bar',
+    data:{ labels:['Cohort 1','Cohort 2'],
+      datasets:[
+        {label:'Day 30',data:[83,79],backgroundColor:INK,borderRadius:2},
+        {label:'Day 60',data:[67,64],backgroundColor:'#555',borderRadius:2},
+        {label:'Day 90',data:[61,null],backgroundColor:'#CCC',borderRadius:2}
+      ]},
+    options:base({ plugins:{legend:{display:true,position:'top',
+        labels:{color:MID,font:{family:'IBM Plex Sans',size:10},boxWidth:10,boxHeight:10,padding:10}}},
+      scales:{ x:xScale(), y:yScale({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:0,max:100}) } })
+  });
+
+  new Chart(document.getElementById('adherenceChart'),{
+    type:'line',
+    data:{ labels:['Month 1','Month 2','Month 3','Month 4'],
+      datasets:[{ data:[71,74,76,78], borderColor:INK, backgroundColor:'rgba(17,17,17,0.04)',
+        fill:true, tension:0.3, pointBackgroundColor:INK, pointRadius:5, borderWidth:2 }] },
+    options:base({ scales:{
+      x:xScale({grid:{color:BORDER,lineWidth:0.5}}),
+      y:yScale({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:60,max:100}) } })
+  });
+
+  new Chart(document.getElementById('adoptionChart'),{
+    type:'bar',
+    data:{ labels:['Core Feature','Secondary Feature','Differentiator Feature','Notification Feature'],
+      datasets:[{ data:[94,67,43,38], borderRadius:2, backgroundColor:[INK,INK,RED,'#AAA'] }] },
+    options:base({ indexAxis:'y',
+      scales:{ x:xScale({grid:{color:BORDER,lineWidth:0.5},ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:0,max:100}),
+        y:yScale({grid:{display:false}}) } })
+  });
+</script>
+</body>
+</html>

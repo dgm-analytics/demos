@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail — Revenue & Returns Dashboard | DGM Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #FAFAFA;
+      --red: #E63946;
+      --mid: #999999;
+      --white: #FFFFFF;
+      --border: #E2E2DE;
+      --surface: #F4F4F0;
+      --green: #2A9D6B;
+      --amber: #E8A838;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--ink);
+      padding: 18px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .brand-mark { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.2em; color: var(--red); white-space: nowrap; }
+    .divider-v { width: 1px; height: 24px; background: #2A2A2A; flex-shrink: 0; }
+    .client-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.06em; color: var(--white); }
+    .header-right { text-align: right; }
+    .report-period { font-size: 10px; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; }
+    .report-date { font-size: 12px; color: #CCCCCC; margin-top: 2px; }
+    .main { padding: 24px 36px 20px; }
+    .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.22em; color: var(--mid); margin-bottom: 12px; }
+    .sample-banner { background: #FFF8E7; border: 1px solid #F0D080; border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px; }
+    .sample-dot { width: 6px; height: 6px; border-radius: 50%; background: #C8960A; flex-shrink: 0; margin-top: 3px; }
+    .sample-text { font-size: 11px; color: #7A5C00; font-weight: 500; letter-spacing: 0.03em; }
+    .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px 14px; min-width: 0; }
+    .kpi-card.accent { border-top: 3px solid var(--red); }
+    .kpi-card.accent-green { border-top: 3px solid var(--green); }
+    .kpi-card.accent-amber { border-top: 3px solid var(--amber); }
+    .kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; font-weight: 500; }
+    .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.01em; color: var(--ink); line-height: 1; }
+    .kpi-delta { margin-top: 6px; font-size: 11px; color: var(--green); font-weight: 500; }
+    .kpi-delta.warn { color: var(--amber); }
+    .kpi-delta.down { color: var(--red); }
+    .kpi-sub { margin-top: 3px; font-size: 11px; color: var(--mid); }
+    .returns-strip { background: #FFFBF0; border: 1px solid #F0D898; border-left: 4px solid var(--amber); border-radius: 6px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .returns-main { }
+    .returns-strip-label { font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.18em; color: #B07D1A; margin-bottom: 4px; }
+    .returns-big { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--ink); line-height: 1; }
+    .returns-sub { font-size: 11px; color: #888; margin-top: 3px; }
+    .returns-breakdown { display: flex; gap: 24px; flex-wrap: wrap; }
+    .rb-item { }
+    .rb-value { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--ink); line-height: 1; }
+    .rb-label { font-size: 10px; color: var(--mid); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+    .charts-row-wide { display: grid; grid-template-columns: 2fr 1.3fr; gap: 14px; margin-bottom: 14px; }
+    .charts-row-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .chart-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 18px 18px 14px; min-width: 0; }
+    .chart-card.returns-flag { border-top: 3px solid var(--amber); }
+    .chart-title { font-weight: 500; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+    .chart-subtitle { font-size: 11px; color: var(--mid); margin-bottom: 14px; line-height: 1.5; }
+    .chart-legend { margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #777; }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+    .insight-card { background: var(--ink); border-radius: 6px; padding: 20px 22px; margin-bottom: 24px; }
+    .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .insight-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .insight-title { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; color: var(--red); }
+    .insight-items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .insight-item { border-left: 2px solid #252525; padding-left: 12px; }
+    .insight-finding { font-size: 12px; color: #AAAAAA; margin-bottom: 8px; line-height: 1.6; }
+    .insight-action { font-size: 12px; color: var(--white); font-weight: 500; line-height: 1.6; }
+    .footer { border-top: 1px solid var(--border); padding: 14px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.14em; color: var(--ink); }
+    .footer-brand span { color: var(--red); }
+    .footer-note { font-size: 11px; color: var(--mid); }
+
+    @media (max-width: 900px) {
+      .header { padding: 16px 20px; }
+      .main { padding: 20px 20px 16px; }
+      .footer { padding: 12px 20px; }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .kpi-grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: repeat(2, 1fr); }
+      .returns-strip { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 540px) {
+      .header { padding: 14px 16px; }
+      .client-name { font-size: 14px; }
+      .divider-v { display: none; }
+      .header-right { display: none; }
+      .main { padding: 16px 16px 12px; }
+      .footer { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+      .footer-note { display: none; }
+      .kpi-grid-4 { grid-template-columns: 1fr 1fr; }
+      .kpi-grid-3 { grid-template-columns: 1fr 1fr; }
+      .kpi-value { font-size: 28px; }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: 1fr; }
+      .returns-breakdown { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand-mark">DGM ANALYTICS</div>
+    <div class="divider-v"></div>
+    <div class="client-name">RETAIL — REVENUE & RETURNS DASHBOARD</div>
+  </div>
+  <div class="header-right">
+    <div class="report-period">Reporting Period</div>
+    <div class="report-date">November 2025 — April 2026</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="sample-banner">
+    <div class="sample-dot"></div>
+    <div class="sample-text">SAMPLE DATA — This dashboard illustrates the metrics DGM Analytics tracks for independent retail shops. All figures are simulated for demonstration. Integrates with Square and Shopify.</div>
+  </div>
+
+  <div class="section-label">APRIL 2026 — KEY METRICS</div>
+  <div class="kpi-grid-4">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Gross Revenue</div>
+      <div class="kpi-value">$48.4K</div>
+      <div class="kpi-delta">↑ 17% vs last month</div>
+      <div class="kpi-sub">Before returns</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-label">Net Revenue</div>
+      <div class="kpi-value">$44.2K</div>
+      <div class="kpi-delta">↑ 14% vs last month</div>
+      <div class="kpi-sub">After returns deducted</div>
+    </div>
+    <div class="kpi-card accent-amber">
+      <div class="kpi-label">Return Rate</div>
+      <div class="kpi-value">8.6%</div>
+      <div class="kpi-delta warn">↑ 1.2pts vs last month</div>
+      <div class="kpi-sub">% of units returned</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Transaction</div>
+      <div class="kpi-value">$67.40</div>
+      <div class="kpi-delta">↑ 4% vs last month</div>
+      <div class="kpi-sub">Per customer visit</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid-3">
+    <div class="kpi-card">
+      <div class="kpi-label">Return Customer Rate</div>
+      <div class="kpi-value">34%</div>
+      <div class="kpi-delta">↑ 6pts over 6 months</div>
+      <div class="kpi-sub">Visited more than once</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Top SKU Revenue</div>
+      <div class="kpi-value">$8,240</div>
+      <div class="kpi-delta">Women's Denim Jacket</div>
+      <div class="kpi-sub">17% of gross revenue</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Dead Inventory Items</div>
+      <div class="kpi-value">14</div>
+      <div class="kpi-delta down">↑ 3 items since last month</div>
+      <div class="kpi-sub">No sales in 60+ days</div>
+    </div>
+  </div>
+
+  <div class="section-label">RETURNS SNAPSHOT — APRIL 2026</div>
+  <div class="returns-strip">
+    <div class="returns-main">
+      <div class="returns-strip-label">TOTAL RETURNS VALUE THIS MONTH</div>
+      <div class="returns-big">$4,190 lost to returns</div>
+      <div class="returns-sub">8.6% of gross revenue — up from 7.4% last month</div>
+    </div>
+    <div class="returns-breakdown">
+      <div class="rb-item">
+        <div class="rb-value">$1,820</div>
+        <div class="rb-label">Footwear</div>
+      </div>
+      <div class="rb-item">
+        <div class="rb-value">$1,240</div>
+        <div class="rb-label">Outerwear</div>
+      </div>
+      <div class="rb-item">
+        <div class="rb-value">$610</div>
+        <div class="rb-label">Tops & Tees</div>
+      </div>
+      <div class="rb-item">
+        <div class="rb-value">$520</div>
+        <div class="rb-label">Accessories</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-wide">
+    <div class="chart-card">
+      <div class="chart-title">Gross vs. Net Revenue</div>
+      <div class="chart-subtitle">6-month trend — gross revenue vs. net revenue after returns. The gap is your returns cost.</div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="revenueChart" role="img" aria-label="Line chart comparing gross and net monthly revenue Nov 2025 to Apr 2026">Nov $31.2K/$28.9K, Dec $52.4K/$47.8K, Jan $28.1K/$26.4K, Feb $33.6K/$31.2K, Mar $41.2K/$38.7K, Apr $48.4K/$44.2K.</canvas>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#111111;"></span>Gross Revenue</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#2A9D6B;"></span>Net Revenue</span>
+      </div>
+    </div>
+    <div class="chart-card returns-flag">
+      <div class="chart-title">Return Rate by Category</div>
+      <div class="chart-subtitle">% of units returned per product category — April 2026</div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="returnRateChart" role="img" aria-label="Horizontal bar chart of return rates: footwear 14.2%, outerwear 11.8%, accessories 6.4%, tops 5.1%, bags 3.2%">Footwear 14.2%, Outerwear 11.8%, Accessories 6.4%, Tops 5.1%, Bags 3.2%.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-equal">
+    <div class="chart-card">
+      <div class="chart-title">Top SKUs by Revenue</div>
+      <div class="chart-subtitle">Best-performing products this month — gross revenue contribution</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="skuChart" role="img" aria-label="Horizontal bar chart of top 5 SKUs by revenue">Denim Jacket $8,240, Linen Dress $6,180, Tote Bag $4,920, Leather Crossbody $4,410, Graphic Tee $3,870.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Day of Week</div>
+      <div class="chart-subtitle">Average daily revenue by day — identifies peak and slow trading days</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="dowChart" role="img" aria-label="Bar chart of average revenue by day of week, Saturday highest at $14,200">Mon $4.2K, Tue $3.8K, Wed $4.1K, Thu $5.2K, Fri $8.4K, Sat $14.2K, Sun $8.5K.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-equal">
+    <div class="chart-card">
+      <div class="chart-title">Return Customer Rate</div>
+      <div class="chart-subtitle">% of monthly customers who have visited more than once</div>
+      <div style="position:relative;width:100%;height:200px;">
+        <canvas id="repeatChart" role="img" aria-label="Line chart showing return customer rate growing from 28% in November to 34% in April">Nov 28%, Dec 31%, Jan 24%, Feb 29%, Mar 32%, Apr 34%.</canvas>
+      </div>
+    </div>
+    <div class="chart-card returns-flag">
+      <div class="chart-title">Returns Value vs. Gross Revenue</div>
+      <div class="chart-subtitle">Monthly returns cost stacked inside gross revenue — amber shows money lost each month</div>
+      <div style="position:relative;width:100%;height:200px;">
+        <canvas id="returnsValueChart" role="img" aria-label="Stacked bar chart showing net revenue and returns value each month">Monthly gross vs returns value, November through April.</canvas>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#111111;"></span>Net Revenue</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#E8A838;"></span>Returns Cost</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">PRESCRIPTIVE INSIGHTS — APRIL 2026</div>
+  <div class="insight-card">
+    <div class="insight-header">
+      <div class="insight-dot"></div>
+      <div class="insight-title">DGM ANALYTICS — MONTHLY RECOMMENDATIONS</div>
+    </div>
+    <div class="insight-items">
+      <div class="insight-item">
+        <div class="insight-finding">Footwear has a 14.2% return rate — nearly double your store average. That's $1,820 walking back out the door every month.</div>
+        <div class="insight-action">→ Review sizing info and product descriptions for footwear. A fit guide or size chart at point of sale could cut this in half.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">14 SKUs have had zero sales in 60+ days and that number is growing. Dead inventory ties up cash and floor space.</div>
+        <div class="insight-action">→ Mark down the 5 oldest items by 20–30% this week. Recovered cash outperforms shelf space for slow-moving product every time.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Monday and Tuesday average under $4,000/day — roughly half of Thursday. You may be over-staffed on your two slowest days.</div>
+        <div class="insight-action">→ Shift one part-time shift from Mon/Tue to Fri/Sat where revenue is 3–4x higher. Estimated net margin gain: $800–$1,200/month.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Return customer rate is up 6pts over 6 months — 34% of your customers are choosing to come back. That's a real loyalty signal.</div>
+        <div class="insight-action">→ Introduce a simple repeat-customer incentive to push toward 40%. Repeat customers spend 25–40% more per visit on average.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-brand"><span>DGM</span> ANALYTICS &nbsp;·&nbsp; dexter@dgmanalytics.com</div>
+  <div class="footer-note">Sample dashboard — simulated data &nbsp;·&nbsp; Square / Shopify integration &nbsp;·&nbsp; DGM Analytics 2026</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const INK='#111111', RED='#E63946', GREEN='#2A9D6B', AMBER='#E8A838';
+  const BORDER='#E8E8E4', MID='#777777';
+
+  const xS = (o={}) => Object.assign({ grid:{display:false}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const yS = (o={}) => Object.assign({ grid:{color:BORDER,lineWidth:0.5}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const base = (o={}) => Object.assign({ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }, o);
+
+  const months = ['Nov','Dec','Jan','Feb','Mar','Apr'];
+  const gross =  [31200,52400,28100,33600,41200,48420];
+  const net =    [28900,47800,26400,31200,38700,44230];
+  const rets =   gross.map((g,i)=>g-net[i]);
+
+  new Chart(document.getElementById('revenueChart'),{
+    type:'line',
+    data:{ labels:months, datasets:[
+      { label:'Gross', data:gross, borderColor:INK, backgroundColor:'transparent', tension:0.3, pointBackgroundColor:INK, pointRadius:4, borderWidth:2 },
+      { label:'Net', data:net, borderColor:GREEN, backgroundColor:'rgba(42,157,107,0.06)', fill:true, tension:0.3, pointBackgroundColor:GREEN, pointRadius:4, borderWidth:2 }
+    ]},
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5}}), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},beginAtZero:false}) } })
+  });
+
+  new Chart(document.getElementById('returnRateChart'),{
+    type:'bar',
+    data:{ labels:['Footwear','Outerwear','Accessories','Tops & Tees','Bags'],
+      datasets:[{ data:[14.2,11.8,6.4,5.1,3.2], backgroundColor:[RED,AMBER,'#AAAAAA','#CCCCCC','#DDDDDD'], borderRadius:3 }]},
+    options:base({ indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.parsed.x+'% return rate'}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5},ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:0,max:20}), y:yS({grid:{display:false}}) } })
+  });
+
+  new Chart(document.getElementById('skuChart'),{
+    type:'bar',
+    data:{ labels:["Women's Denim Jacket",'Linen Midi Dress','Canvas Tote Bag','Leather Crossbody','Graphic Tee Set'],
+      datasets:[{ data:[8240,6180,4920,4410,3870], backgroundColor:[INK,'#333','#555','#888','#AAA'], borderRadius:3 }]},
+    options:base({ indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.x.toLocaleString()}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5},ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(1)+'K'},min:0}), y:yS({grid:{display:false}}) } })
+  });
+
+  new Chart(document.getElementById('dowChart'),{
+    type:'bar',
+    data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets:[{ data:[4200,3800,4100,5200,8400,14200,8520], backgroundColor:[BORDER,BORDER,BORDER,'#888','#555',INK,'#555'], borderRadius:3 }]},
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},
+      scales:{ x:xS(), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},beginAtZero:true}) } })
+  });
+
+  new Chart(document.getElementById('repeatChart'),{
+    type:'line',
+    data:{ labels:months, datasets:[{ data:[28,31,24,29,32,34], borderColor:INK, backgroundColor:'rgba(17,17,17,0.04)', fill:true, tension:0.3, pointBackgroundColor:INK, pointRadius:4, borderWidth:2 }]},
+    options:base({ scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5}}), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:0,max:50}) } })
+  });
+
+  new Chart(document.getElementById('returnsValueChart'),{
+    type:'bar',
+    data:{ labels:months,
+      datasets:[
+        { label:'Net Revenue', data:net, backgroundColor:INK, borderRadius:0 },
+        { label:'Returns Cost', data:rets, backgroundColor:AMBER, borderRadius:0 }
+      ]},
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},
+      scales:{
+        x:{ stacked:true, grid:{display:false}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} },
+        y:{ stacked:true, grid:{color:BORDER,lineWidth:0.5}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'} }
+      } })
+  });
+</script>
+</body>
+</html>
