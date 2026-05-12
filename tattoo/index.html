@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tattoo Studio — Artist & Booking Dashboard | DGM Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #FAFAFA;
+      --red: #E63946;
+      --mid: #999999;
+      --white: #FFFFFF;
+      --border: #E2E2DE;
+      --surface: #F4F4F0;
+      --green: #2A9D6B;
+      --amber: #E8A838;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--ink);
+      padding: 18px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .brand-mark { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.2em; color: var(--red); white-space: nowrap; }
+    .divider-v { width: 1px; height: 24px; background: #2A2A2A; flex-shrink: 0; }
+    .client-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.06em; color: var(--white); }
+    .header-right { text-align: right; }
+    .report-period { font-size: 10px; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; }
+    .report-date { font-size: 12px; color: #CCCCCC; margin-top: 2px; }
+    .main { padding: 24px 36px 20px; }
+    .section-label { font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.22em; color: var(--mid); margin-bottom: 12px; }
+    .sample-banner { background: #FFF8E7; border: 1px solid #F0D080; border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px; }
+    .sample-dot { width: 6px; height: 6px; border-radius: 50%; background: #C8960A; flex-shrink: 0; margin-top: 3px; }
+    .sample-text { font-size: 11px; color: #7A5C00; font-weight: 500; letter-spacing: 0.03em; }
+    .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px 14px; min-width: 0; }
+    .kpi-card.accent { border-top: 3px solid var(--red); }
+    .kpi-card.accent-green { border-top: 3px solid var(--green); }
+    .kpi-card.accent-amber { border-top: 3px solid var(--amber); }
+    .kpi-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; font-weight: 500; }
+    .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.01em; color: var(--ink); line-height: 1; }
+    .kpi-delta { margin-top: 6px; font-size: 11px; color: var(--green); font-weight: 500; }
+    .kpi-delta.warn { color: var(--amber); }
+    .kpi-delta.down { color: var(--red); }
+    .kpi-sub { margin-top: 3px; font-size: 11px; color: var(--mid); }
+    .noshow-strip { background: #FFFBF0; border: 1px solid #F0D898; border-left: 4px solid var(--amber); border-radius: 6px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .noshow-strip-label { font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.18em; color: #B07D1A; margin-bottom: 4px; }
+    .noshow-big { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--ink); line-height: 1; }
+    .noshow-sub { font-size: 11px; color: #888; margin-top: 3px; }
+    .noshow-breakdown { display: flex; gap: 24px; flex-wrap: wrap; }
+    .nb-item { }
+    .nb-value { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--ink); line-height: 1; }
+    .nb-label { font-size: 10px; color: var(--mid); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+    .artist-util-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 18px 20px 16px; margin-bottom: 24px; }
+    .artist-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .artist-row:last-child { margin-bottom: 0; }
+    .artist-name-label { font-size: 13px; font-weight: 500; color: var(--ink); min-width: 56px; }
+    .artist-bar-track { flex: 1; height: 10px; background: var(--surface); border-radius: 3px; overflow: hidden; }
+    .artist-bar-fill { height: 100%; border-radius: 3px; }
+    .artist-pct { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--ink); min-width: 48px; text-align: right; line-height: 1; }
+    .artist-rev { font-size: 11px; color: var(--mid); min-width: 48px; text-align: right; }
+    .charts-row-wide { display: grid; grid-template-columns: 2fr 1.3fr; gap: 14px; margin-bottom: 14px; }
+    .charts-row-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .chart-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 18px 18px 14px; min-width: 0; }
+    .chart-title { font-weight: 500; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+    .chart-subtitle { font-size: 11px; color: var(--mid); margin-bottom: 14px; line-height: 1.5; }
+    .chart-legend { margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #777; }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+    .insight-card { background: var(--ink); border-radius: 6px; padding: 20px 22px; margin-bottom: 24px; }
+    .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .insight-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .insight-title { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; color: var(--red); }
+    .insight-items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .insight-item { border-left: 2px solid #252525; padding-left: 12px; }
+    .insight-finding { font-size: 12px; color: #AAAAAA; margin-bottom: 8px; line-height: 1.6; }
+    .insight-action { font-size: 12px; color: var(--white); font-weight: 500; line-height: 1.6; }
+    .footer { border-top: 1px solid var(--border); padding: 14px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.14em; color: var(--ink); }
+    .footer-brand span { color: var(--red); }
+    .footer-note { font-size: 11px; color: var(--mid); }
+
+    @media (max-width: 900px) {
+      .header { padding: 16px 20px; }
+      .main { padding: 20px 20px 16px; }
+      .footer { padding: 12px 20px; }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .kpi-grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: repeat(2, 1fr); }
+      .noshow-strip { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 540px) {
+      .header { padding: 14px 16px; }
+      .client-name { font-size: 14px; }
+      .divider-v { display: none; }
+      .header-right { display: none; }
+      .main { padding: 16px 16px 12px; }
+      .footer { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+      .footer-note { display: none; }
+      .kpi-grid-4 { grid-template-columns: 1fr 1fr; }
+      .kpi-grid-3 { grid-template-columns: 1fr 1fr; }
+      .kpi-value { font-size: 28px; }
+      .charts-row-wide { grid-template-columns: 1fr; }
+      .charts-row-equal { grid-template-columns: 1fr; }
+      .insight-items { grid-template-columns: 1fr; }
+      .noshow-breakdown { gap: 14px; }
+      .artist-row { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="brand-mark">DGM ANALYTICS</div>
+    <div class="divider-v"></div>
+    <div class="client-name">TATTOO STUDIO — ARTIST & BOOKING DASHBOARD</div>
+  </div>
+  <div class="header-right">
+    <div class="report-period">Reporting Period</div>
+    <div class="report-date">November 2025 — April 2026</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="sample-banner">
+    <div class="sample-dot"></div>
+    <div class="sample-text">SAMPLE DATA — This dashboard illustrates the metrics DGM Analytics tracks for independent tattoo studios. All figures are simulated for demonstration. Integrates with Square and booking platforms.</div>
+  </div>
+
+  <div class="section-label">APRIL 2026 — KEY METRICS</div>
+  <div class="kpi-grid-4">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Gross Revenue</div>
+      <div class="kpi-value">$35K</div>
+      <div class="kpi-delta">↑ 11% vs last month</div>
+      <div class="kpi-sub">April 2026</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-label">Avg Ticket</div>
+      <div class="kpi-value">$312</div>
+      <div class="kpi-delta">↑ $24 vs last month</div>
+      <div class="kpi-sub">Per completed appointment</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Repeat Client Rate</div>
+      <div class="kpi-value">41%</div>
+      <div class="kpi-delta">↑ 7pts over 6 months</div>
+      <div class="kpi-sub">Returned for another session</div>
+    </div>
+    <div class="kpi-card accent-amber">
+      <div class="kpi-label">No-Show Rate</div>
+      <div class="kpi-value">8.2%</div>
+      <div class="kpi-delta warn">↑ 1.4pts vs last month</div>
+      <div class="kpi-sub">Appointments not honored</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid-3">
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Artist Utilization</div>
+      <div class="kpi-value">70.5%</div>
+      <div class="kpi-delta">↑ 3.2pts vs last month</div>
+      <div class="kpi-sub">Booked hours / available hours</div>
+    </div>
+    <div class="kpi-card accent">
+      <div class="kpi-label">Top Revenue Artist</div>
+      <div class="kpi-value">$12.4K</div>
+      <div class="kpi-delta">Marcus — 87% utilization</div>
+      <div class="kpi-sub">35.4% of studio revenue</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Walk-in Rate</div>
+      <div class="kpi-value">22%</div>
+      <div class="kpi-delta warn">↑ 4pts — no policy in place</div>
+      <div class="kpi-sub">Of total appointments</div>
+    </div>
+  </div>
+
+  <div class="section-label">NO-SHOW SNAPSHOT — APRIL 2026</div>
+  <div class="noshow-strip">
+    <div>
+      <div class="noshow-strip-label">ESTIMATED REVENUE LOST TO NO-SHOWS THIS MONTH</div>
+      <div class="noshow-big">$2,870 lost to no-shows</div>
+      <div class="noshow-sub">8.2% no-show rate — no deposit policy in place</div>
+    </div>
+    <div class="noshow-breakdown">
+      <div class="nb-item">
+        <div class="nb-value">~$34K</div>
+        <div class="nb-label">Annual Run Rate</div>
+      </div>
+      <div class="nb-item">
+        <div class="nb-value">9.2</div>
+        <div class="nb-label">Appts Lost / Month</div>
+      </div>
+      <div class="nb-item">
+        <div class="nb-value">$0</div>
+        <div class="nb-label">Deposit Required</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">ARTIST UTILIZATION — APRIL 2026</div>
+  <div class="artist-util-card">
+    <div class="chart-title" style="margin-bottom:4px;">Booked Hours vs. Available Hours</div>
+    <div class="chart-subtitle">Utilization = booked client hours ÷ scheduled available hours. Revenue shown per artist for the month.</div>
+    <div class="artist-row">
+      <div class="artist-name-label">Marcus</div>
+      <div class="artist-bar-track"><div class="artist-bar-fill" style="width:87%;background:#111111;"></div></div>
+      <div class="artist-pct">87%</div>
+      <div class="artist-rev">$12.4K</div>
+    </div>
+    <div class="artist-row">
+      <div class="artist-name-label">Jade</div>
+      <div class="artist-bar-track"><div class="artist-bar-fill" style="width:79%;background:#444444;"></div></div>
+      <div class="artist-pct">79%</div>
+      <div class="artist-rev">$9.8K</div>
+    </div>
+    <div class="artist-row">
+      <div class="artist-name-label">Remy</div>
+      <div class="artist-bar-track"><div class="artist-bar-fill" style="width:64%;background:#888888;"></div></div>
+      <div class="artist-pct">64%</div>
+      <div class="artist-rev">$7.2K</div>
+    </div>
+    <div class="artist-row">
+      <div class="artist-name-label">Sasha</div>
+      <div class="artist-bar-track"><div class="artist-bar-fill" style="width:52%;background:#E8A838;"></div></div>
+      <div class="artist-pct" style="color:#E8A838;">52%</div>
+      <div class="artist-rev">$5.6K</div>
+    </div>
+  </div>
+
+  <div class="charts-row-wide">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Revenue</div>
+      <div class="chart-subtitle">6-month gross revenue trend — November 2025 through April 2026</div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="revenueChart" role="img" aria-label="Line chart of monthly gross revenue Nov 2025–Apr 2026: Nov $26.8K, Dec $29.4K, Jan $22.1K, Feb $27.6K, Mar $31.4K, Apr $35K"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Avg Ticket by Style Category</div>
+      <div class="chart-subtitle">Average revenue per appointment by tattoo style — April 2026</div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="styleChart" role="img" aria-label="Horizontal bar chart of avg ticket by style: Large Custom $520, Cover-Up $480, Black &amp; Grey $380, Color $350, Flash $175"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-equal">
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Day of Week</div>
+      <div class="chart-subtitle">Average daily revenue by day — studio closed Mondays</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="dowChart" role="img" aria-label="Bar chart of average revenue by day, closed Monday, Saturday highest at $9,600"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Repeat Client Rate</div>
+      <div class="chart-subtitle">% of monthly clients returning for a second session — 6-month trend</div>
+      <div style="position:relative;width:100%;height:210px;">
+        <canvas id="repeatChart" role="img" aria-label="Line chart of repeat client rate growing from 34% in November to 41% in April"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:24px;">
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Artist</div>
+      <div class="chart-subtitle">Total gross revenue contribution per artist — April 2026. Marcus leads at $12.4K (35.4% of studio revenue).</div>
+      <div style="position:relative;width:100%;height:180px;">
+        <canvas id="artistRevChart" role="img" aria-label="Horizontal bar chart of revenue by artist: Marcus $12.4K, Jade $9.8K, Remy $7.2K, Sasha $5.6K"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">PRESCRIPTIVE INSIGHTS — APRIL 2026</div>
+  <div class="insight-card">
+    <div class="insight-header">
+      <div class="insight-dot"></div>
+      <div class="insight-title">DGM ANALYTICS — MONTHLY RECOMMENDATIONS</div>
+    </div>
+    <div class="insight-items">
+      <div class="insight-item">
+        <div class="insight-finding">Sasha is running at 52% utilization — 35 points below Marcus and 18 below the studio average. At the current avg ticket, that gap represents $3,600–$4,000/month in unrealized revenue.</div>
+        <div class="insight-action">→ Review Sasha's booking channel visibility. If clients can't find or book her easily, fix the discovery problem before assuming it's a demand problem.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">No-shows are costing $2,870 this month — nearly $34K annualized — and your studio takes a $0 deposit. That's a policy choice that's bleeding real money every week without any friction on the client side.</div>
+        <div class="insight-action">→ Implement a $75–$100 non-refundable deposit at booking. Industry data shows this cuts no-show rates by 60–70% within the first 60 days.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Flash and walk-in work averages $175 — less than half the $380–$520 earned on custom and cover-up sessions. With walk-in rate climbing to 22% and no guardrails, unplanned appointments are displacing higher-value booked work.</div>
+        <div class="insight-action">→ Designate one artist per day for walk-ins and protect custom booking slots for the rest. Flash fills gaps — it shouldn't replace planned revenue.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-finding">Repeat client rate is 41% and has climbed 7 points over 6 months. Clients are already choosing to come back without any formal incentive — this momentum is real and worth capturing before it plateaus.</div>
+        <div class="insight-action">→ Introduce a rebooking incentive: offer a $25 credit on the next session when booked before leaving. Formalize what's already working.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-brand"><span>DGM</span> ANALYTICS &nbsp;·&nbsp; dexter@dgmanalytics.com</div>
+  <div class="footer-note">Sample dashboard — simulated data &nbsp;·&nbsp; Square / booking platform integration &nbsp;·&nbsp; DGM Analytics 2026</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const INK='#111111', RED='#E63946', GREEN='#2A9D6B', AMBER='#E8A838';
+  const BORDER='#E8E8E4', MID='#777777';
+
+  const xS = (o={}) => Object.assign({ grid:{display:false}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const yS = (o={}) => Object.assign({ grid:{color:BORDER,lineWidth:0.5}, ticks:{color:MID,font:{family:'IBM Plex Sans',size:11}} }, o);
+  const base = (o={}) => Object.assign({ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }, o);
+
+  const months = ['Nov','Dec','Jan','Feb','Mar','Apr'];
+
+  new Chart(document.getElementById('revenueChart'),{
+    type:'line',
+    data:{ labels:months, datasets:[
+      { data:[26800,29400,22100,27600,31400,35000], borderColor:INK, backgroundColor:'rgba(17,17,17,0.05)', fill:true, tension:0.3, pointBackgroundColor:INK, pointRadius:4, borderWidth:2 }
+    ]},
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5}}), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},beginAtZero:false}) } })
+  });
+
+  new Chart(document.getElementById('styleChart'),{
+    type:'bar',
+    data:{ labels:['Large Custom','Cover-Up','Black & Grey','Color','Flash / Walk-in'],
+      datasets:[{ data:[520,480,380,350,175], backgroundColor:[INK,'#333','#555','#888',AMBER], borderRadius:3 }]},
+    options:base({ indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.x+' avg ticket'}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5},ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+v},min:0,max:600}), y:yS({grid:{display:false}}) } })
+  });
+
+  new Chart(document.getElementById('dowChart'),{
+    type:'bar',
+    data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets:[{ data:[0,3200,4800,6400,8200,9600,2800],
+        backgroundColor:['#E2E2DE',BORDER,'#AAAAAA','#888','#555',INK,BORDER], borderRadius:3 }]},
+    options:base({ plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y===0?' Closed':' $'+c.parsed.y.toLocaleString()}}},
+      scales:{ x:xS(), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},beginAtZero:true}) } })
+  });
+
+  new Chart(document.getElementById('repeatChart'),{
+    type:'line',
+    data:{ labels:months, datasets:[{ data:[34,36,31,36,39,41], borderColor:GREEN, backgroundColor:'rgba(42,157,107,0.06)', fill:true, tension:0.3, pointBackgroundColor:GREEN, pointRadius:4, borderWidth:2 }]},
+    options:base({ scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5}}), y:yS({ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>v+'%'},min:20,max:55}) } })
+  });
+
+  new Chart(document.getElementById('artistRevChart'),{
+    type:'bar',
+    data:{ labels:['Marcus','Jade','Remy','Sasha'],
+      datasets:[{ data:[12400,9800,7200,5600], backgroundColor:[INK,'#444','#888',AMBER], borderRadius:3 }]},
+    options:base({ indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.x.toLocaleString()}}},
+      scales:{ x:xS({grid:{color:BORDER,lineWidth:0.5},ticks:{color:MID,font:{family:'IBM Plex Sans',size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},min:0}), y:yS({grid:{display:false}}) } })
+  });
+</script>
+</body>
+</html>
